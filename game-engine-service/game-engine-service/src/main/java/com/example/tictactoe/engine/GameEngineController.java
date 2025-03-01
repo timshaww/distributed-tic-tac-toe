@@ -16,12 +16,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/games")
 public class GameEngineController {
+
     // Store the games in a map.
-    private final Map<String, Game> games = new HashMap<>();
+    private final Map<String, Game> games;
+
+    public GameEngineController() {
+        this.games = new HashMap<>();
+    }
+
+    // Constructor for test injection
+    public GameEngineController(Map<String, Game> games) {
+        this.games = games;
+    }
 
     // Make a move in the game.
     @PostMapping("/{gameId}/move")
     public ResponseEntity<?> makeMove(@PathVariable String gameId, @RequestBody MoveRequest move) {
+        System.out.println("\u001B[34m" + "Received move request: " + move + "\u001B[0m");
 
         // Get the game from the map.
         Game game = games.get(gameId);
@@ -39,6 +50,7 @@ public class GameEngineController {
     // Get the current state of the game.
     @GetMapping("/{gameId}")
     public ResponseEntity<?> getGameState(@PathVariable String gameId) {
+        System.out.println("\u001B[32m" + "Received request for game state: " + gameId + "\u001B[0m");
 
         // Get the game from the map.
         Game game = games.get(gameId);
@@ -51,6 +63,8 @@ public class GameEngineController {
     // Create a new game.
     @PostMapping("/new")
     public ResponseEntity<String> createGame() {
+        System.out.println("\u001B[36m" + "Received request to create a new game" + "\u001B[0m");
+
         // Generate a unique game ID.
         String gameId = UUID.randomUUID().toString();
 

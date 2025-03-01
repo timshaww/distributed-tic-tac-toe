@@ -3,6 +3,7 @@ package com.example.tictactoe.engine;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Game {
+
     @JsonProperty("board")
     private final char[][] board = new char[3][3];
     private char currentPlayer = 'X';
@@ -18,48 +19,82 @@ public class Game {
         }
     }
 
-    public boolean makeMove(char player, int row, int col) {
+    private void printBoard() {
+        System.out.println("Current Board State:");
+        for (char[] row : board) {
+            for (char cell : row) {
+                System.out.print(cell + " ");
+            }
+            System.out.println();
+        }
+    }
 
-        // Check if the game is over, the cell is already occupied, or it's not the
-        // player's turn.
+    public boolean makeMove(char player, int row, int col) {
+        System.out.println("Player " + player + " is making a move at [" + row + "][" + col + "]");
+
         if (!status.equals("IN_PROGRESS") || board[row][col] != '-' || player != currentPlayer) {
+            System.out.println("Invalid move: status=" + status + ", cell=" + board[row][col] + ", currentPlayer=" + currentPlayer);
             return false;
         }
 
-        // Update the board and check if the game is over.
         board[row][col] = player;
+        printBoard();
+
         if (checkWin(player)) {
             status = player == 'X' ? "X_WINS" : "O_WINS";
-        } else if (isBoardFull()) {
-            status = "DRAW";
+            System.out.println("Player " + player + " WINS!");
         } else {
-            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+            boolean full = isBoardFull();  // Capture result
+            if (full) {
+                status = "DRAW";  // Ensure this is updated
+                System.out.println("Game ended in a DRAW.");
+            } else {
+                currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                System.out.println("No winner yet, switching to player " + currentPlayer);
+            }
         }
         return true;
     }
 
     private boolean checkWin(char player) {
-        // Check rows and columns for a win.
+        System.out.println("Checking win condition for player " + player);
+
         for (int i = 0; i < 3; i++) {
-            if (board[i][0] == player && board[i][1] == player && board[i][2] == player)
+            if (board[i][0] == player && board[i][1] == player && board[i][2] == player) {
+                System.out.println("Player " + player + " wins by row " + i);
                 return true;
-            if (board[0][i] == player && board[1][i] == player && board[2][i] == player)
+            }
+            if (board[0][i] == player && board[1][i] == player && board[2][i] == player) {
+                System.out.println("Player " + player + " wins by column " + i);
                 return true;
+            }
         }
-        // Check diagonals for a win.
-        if (board[0][0] == player && board[1][1] == player && board[2][2] == player)
+
+        if (board[0][0] == player && board[1][1] == player && board[2][2] == player) {
+            System.out.println("Player " + player + " wins by main diagonal.");
             return true;
-        return board[0][2] == player && board[1][1] == player && board[2][0] == player;
+        }
+        if (board[0][2] == player && board[1][1] == player && board[2][0] == player) {
+            System.out.println("Player " + player + " wins by anti-diagonal.");
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isBoardFull() {
-        // Check if the board is full.
+        System.out.println("Checking if board is full...");
         for (char[] row : board) {
             for (char cell : row) {
-                if (cell == '-')
+                System.out.print(cell + " ");
+                if (cell == '-') {
+                    System.out.println("\nBoard is NOT full.");
                     return false;
+                }
             }
+            System.out.println();
         }
+        System.out.println("Board is FULL.");
         return true;
     }
 

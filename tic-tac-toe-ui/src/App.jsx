@@ -65,7 +65,7 @@ export default function TicTacToe() {
 	};
 
 	useEffect(() => {
-		if (sessionId) {
+		if (sessionId && status === 'IN_PROGRESS') {
 			const interval = setInterval(() => fetchGameState(sessionId), 1000);
 			return () => clearInterval(interval);
 		}

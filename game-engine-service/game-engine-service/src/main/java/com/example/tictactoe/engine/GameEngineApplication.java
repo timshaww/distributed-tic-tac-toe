@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class GameEngineApplication {
-    // Run the Spring Boot application.
+    // Runs the Spring Boot application.
     public static void main(String[] args) {
         SpringApplication.run(GameEngineApplication.class, args);
     }

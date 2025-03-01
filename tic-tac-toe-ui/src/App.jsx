@@ -10,33 +10,51 @@ export default function TicTacToe() {
 		['-', '-', '-'],
 	]);
 	const [status, setStatus] = useState('Waiting to start');
+	const [statusMessage, setStatusMessage] = useState('');
+	const [error, setError] = useState(null);
 
 	const startGame = async () => {
-		const response = await fetch('http://localhost:8081/sessions', {
-			method: 'POST',
-		});
-		const newSessionId = await response.text();
-		setSessionId(newSessionId);
-		simulateGame(newSessionId);
+		try {
+			const response = await fetch('http://localhost:8081/sessions', {
+				method: 'POST',
+			});
+			if (!response.ok) throw new Error('Failed to start game');
+			const newSessionId = await response.text();
+			setSessionId(newSessionId);
+			simulateGame(newSessionId);
+		} catch (err) {
+			setError(err.message);
+		}
 	};
 
 	const simulateGame = async (id) => {
-		await fetch(`http://localhost:8081/sessions/${id}/simulate`, {
-			method: 'POST',
-		});
-		fetchGameState(id);
+		try {
+			const response = await fetch(`http://localhost:8081/sessions/${id}/simulate`, {
+				method: 'POST',
+			});
+			if (!response.ok) throw new Error('Failed to simulate game');
+			fetchGameState(id);
+		} catch (err) {
+			setError(err.message);
+		}
 	};
 
 	const fetchGameState = async (id) => {
-		const response = await fetch(`http://localhost:8081/sessions/${id}`);
-		const data = await response.json();
-		setStatus(data.status);
-		fetchGameBoard(data.gameId);
+		try {
+			const response = await fetch(`http://localhost:8081/sessions/${id}`);
+			if (!response.ok) throw new Error('Failed to fetch game state');
+			const data = await response.json();
+			setStatus(data.status);
+			fetchGameBoard(data.gameId);
+		} catch (err) {
+			setError(err.message);
+		}
 	};
 
 	const fetchGameBoard = async (gameId) => {
 		try {
 			const response = await fetch(`http://localhost:8080/games/${gameId}`);
+			if (!response.ok) throw new Error('Failed to fetch game board');
 			const gameData = await response.json();
 			const formattedBoard = gameData.board.map((row) => row.split(''));
 			setBoard(formattedBoard);
@@ -53,6 +71,25 @@ export default function TicTacToe() {
 		}
 	}, [sessionId]);
 
+	useEffect(() => {
+		switch (status) {
+			case 'IN_PROGRESS':
+				setStatusMessage('In Progress...');
+				break;
+			case 'X_WINS':
+				setStatusMessage('X Wins! 🎉');
+				break;
+			case 'O_WINS':
+				setStatusMessage('O Wins! 🎉');
+				break;
+			case 'DRAW':
+				setStatusMessage("It's a Draw! 🤝");
+				break;
+			default:
+				setStatusMessage('Waiting to start');
+		}
+	}, [status]);
+
 	return (
 		<div className='flex flex-col items-center mt-10'>
 			<button
@@ -61,6 +98,12 @@ export default function TicTacToe() {
 			>
 				<Play size={20} /> Start Simulation
 			</button>
+
+			{error && (
+				<div className='mb-4 p-3 bg-red-500 text-white rounded-lg flex items-center gap-2'>
+					<AlertTriangle size={20} /> {error}
+				</div>
+			)}
 
 			<div className='grid grid-cols-3 gap-2 border p-4 bg-gray-100 rounded-lg shadow-lg'>
 				{board.map((row, i) =>
@@ -75,7 +118,7 @@ export default function TicTacToe() {
 				)}
 			</div>
 
-			<p className='mt-4 text-lg font-medium bg-gray-200 px-4 py-2 rounded-lg shadow-md'>Status: {status}</p>
+			<p className='mt-4 text-lg font-medium bg-gray-200 px-4 py-2 rounded-lg shadow-md'>Status: {statusMessage}</p>
 		</div>
 	);
 }

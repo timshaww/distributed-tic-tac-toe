@@ -22,14 +22,14 @@ public class Game {
 
         // Check if the game is over, the cell is already occupied, or it's not the
         // player's turn.
-        if (status.equals("WIN") || status.equals("DRAW") || board[row][col] != '-' || player != currentPlayer) {
+        if (!status.equals("IN_PROGRESS") || board[row][col] != '-' || player != currentPlayer) {
             return false;
         }
 
         // Update the board and check if the game is over.
         board[row][col] = player;
         if (checkWin(player)) {
-            status = "WIN";
+            status = player == 'X' ? "X_WINS" : "O_WINS";
         } else if (isBoardFull()) {
             status = "DRAW";
         } else {

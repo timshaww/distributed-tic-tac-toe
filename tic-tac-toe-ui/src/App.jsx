@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { Play, Circle, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TicTacToe() {
 	const [sessionId, setSessionId] = useState(null);
@@ -105,19 +106,41 @@ export default function TicTacToe() {
 				</div>
 			)}
 
-			<div className='grid grid-cols-3 gap-2 border p-4 bg-gray-100 rounded-lg shadow-lg'>
+			<div className='grid grid-cols-3 gap-2 border border-gray-300 p-4 bg-gray-100 rounded-lg shadow-lg'>
 				{board.map((row, i) =>
 					row.map((cell, j) => (
-						<div
-							key={`${i}-${j}`}
-							className='w-20 h-20 flex items-center justify-center border text-3xl font-bold bg-white rounded shadow-sm'
+						<motion.div
+							key={`${sessionId}-${i}-${j}-${cell}`} // Ensures fresh re-render when session changes
+							className='w-20 h-20 flex items-center justify-center border border-gray-300 text-3xl font-bold bg-white rounded shadow-sm'
+							initial={{ scale: 1, rotate: 0, x: 0 }} // Ensures animations reset
+							animate={
+								status && typeof status === 'string' // Ensure status is a valid string
+									? status.includes('O_WINS') && cell === 'O'
+										? {
+												scale: [1, 1.2, 1],
+												rotate: [0, 10, -10, 0],
+												transition: { duration: 0.25, repeat: 1 },
+										  }
+										: status.includes('X_WINS') && cell === 'X'
+										? {
+												scale: [1, 1.2, 1],
+												rotate: [0, 10, -10, 0],
+												transition: { duration: 0.25, repeat: 1 },
+										  }
+										: status.includes('DRAW')
+										? {
+												x: [-3, 3, -3, 3, 0], // Shake effect
+												transition: { duration: 0.1, repeat: 3 },
+										  }
+										: { scale: 1, rotate: 0, x: 0 } // Ensures return to normal
+									: { scale: 1, rotate: 0, x: 0 }
+							}
 						>
 							{cell === '-' ? '' : cell === 'X' ? <X size={48} /> : <Circle size={48} />}
-						</div>
+						</motion.div>
 					))
 				)}
 			</div>
-
 			<p className='mt-4 text-lg font-medium bg-gray-200 px-4 py-2 rounded-lg shadow-md'>Status: {statusMessage}</p>
 		</div>
 	);

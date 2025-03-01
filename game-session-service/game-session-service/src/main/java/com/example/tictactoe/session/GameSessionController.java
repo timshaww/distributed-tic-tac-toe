@@ -42,8 +42,6 @@ public class GameSessionController {
     @PostMapping("/{sessionId}/simulate")
     public ResponseEntity<?> simulateGame(@PathVariable String sessionId) {
         System.out.println("\u001B[34m" + "Simulating game for session: " + sessionId + "\u001B[0m");
-        System.out.println("Existing Sessions: " + sessions.keySet());
-        System.out.println("Requested Session ID: " + sessionId + "\n\n");
 
         // Checks if the session exists
         if (!sessions.containsKey(sessionId)) {

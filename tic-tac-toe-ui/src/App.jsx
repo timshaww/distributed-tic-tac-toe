@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
-import { Play, Circle, X } from 'lucide-react';
+import { Play, Circle, X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TicTacToe() {
@@ -92,56 +92,57 @@ export default function TicTacToe() {
 	}, [status]);
 
 	return (
-		<div className='flex flex-col items-center mt-10'>
-			<button
-				onClick={startGame}
-				className='mb-4 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:bg-blue-600 transition-all cursor-pointer'
-			>
-				<Play size={20} /> Start Simulation
-			</button>
+		<div className='flex flex-col items-center justify-center h-screen w-full relative'>
+			<div className='flex flex-col items-center mt-10'>
+				<button
+					onClick={startGame}
+					className='mb-4 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:bg-blue-600 transition-all cursor-pointer'
+				>
+					<Play size={20} /> Start Simulation
+				</button>
 
+				<div className='grid grid-cols-3 gap-2 border border-gray-300 p-4 bg-gray-100 rounded-lg shadow-lg'>
+					{board.map((row, i) =>
+						row.map((cell, j) => (
+							<motion.div
+								key={`${sessionId}-${i}-${j}-${cell}`} // Ensures fresh re-render when session changes
+								className='w-20 h-20 flex items-center justify-center border border-gray-300 text-3xl font-bold bg-white rounded shadow-sm'
+								initial={{ scale: 1, rotate: 0, x: 0 }} // Ensures animations reset
+								animate={
+									status && typeof status === 'string' // Ensure status is a valid string
+										? status.includes('O_WINS') && cell === 'O'
+											? {
+													scale: [1, 1.2, 1],
+													rotate: [0, 10, -10, 0],
+													transition: { duration: 0.5, repeat: 2 },
+											  }
+											: status.includes('X_WINS') && cell === 'X'
+											? {
+													scale: [1, 1.2, 1],
+													rotate: [0, 10, -10, 0],
+													transition: { duration: 0.5, repeat: 2 },
+											  }
+											: status.includes('DRAW')
+											? {
+													x: [-3, 3, -3, 3, 0], // Shake effect
+													transition: { duration: 0.1, repeat: 3 },
+											  }
+											: { scale: 1, rotate: 0, x: 0 } // Ensures return to normal
+										: { scale: 1, rotate: 0, x: 0 }
+								}
+							>
+								{cell === '-' ? '' : cell === 'X' ? <X size={48} /> : <Circle size={48} />}
+							</motion.div>
+						))
+					)}
+				</div>
+				<p className='mt-4 text-lg font-medium bg-gray-200 px-4 py-2 rounded-lg shadow-md'>Status: {statusMessage}</p>
+			</div>
 			{error && (
-				<div className='mb-4 p-3 bg-red-500 text-white rounded-lg flex items-center gap-2'>
+				<div className='absolute bottom-0 right-0 m-6 p-3 bg-red-500 text-white rounded-lg flex items-center gap-2'>
 					<AlertTriangle size={20} /> {error}
 				</div>
 			)}
-
-			<div className='grid grid-cols-3 gap-2 border border-gray-300 p-4 bg-gray-100 rounded-lg shadow-lg'>
-				{board.map((row, i) =>
-					row.map((cell, j) => (
-						<motion.div
-							key={`${sessionId}-${i}-${j}-${cell}`} // Ensures fresh re-render when session changes
-							className='w-20 h-20 flex items-center justify-center border border-gray-300 text-3xl font-bold bg-white rounded shadow-sm'
-							initial={{ scale: 1, rotate: 0, x: 0 }} // Ensures animations reset
-							animate={
-								status && typeof status === 'string' // Ensure status is a valid string
-									? status.includes('O_WINS') && cell === 'O'
-										? {
-												scale: [1, 1.2, 1],
-												rotate: [0, 10, -10, 0],
-												transition: { duration: 0.5, repeat: 2 },
-										  }
-										: status.includes('X_WINS') && cell === 'X'
-										? {
-												scale: [1, 1.2, 1],
-												rotate: [0, 10, -10, 0],
-												transition: { duration: 0.5, repeat: 2 },
-										  }
-										: status.includes('DRAW')
-										? {
-												x: [-3, 3, -3, 3, 0], // Shake effect
-												transition: { duration: 0.1, repeat: 3 },
-										  }
-										: { scale: 1, rotate: 0, x: 0 } // Ensures return to normal
-									: { scale: 1, rotate: 0, x: 0 }
-							}
-						>
-							{cell === '-' ? '' : cell === 'X' ? <X size={48} /> : <Circle size={48} />}
-						</motion.div>
-					))
-				)}
-			</div>
-			<p className='mt-4 text-lg font-medium bg-gray-200 px-4 py-2 rounded-lg shadow-md'>Status: {statusMessage}</p>
 		</div>
 	);
 }

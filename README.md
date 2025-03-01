@@ -46,13 +46,14 @@ The frontend runs on http://localhost:3000
 ---
 
 ##  How to play
-❌⭕️❌
-
-⭕️⭕️❌
-
-⭕️❌❌
 
 1. Open http://localhost:3000 in your browser.
 2. Click "Start Simulation" to create a new game session.
 3. The game will automatically simulate moves until a winner is found or the game ends in a draw.
 4. The board updates in near-real-time! It goes quick, you might miss it!
+
+❌⭕️❌
+
+⭕️⭕️❌
+
+⭕️❌❌

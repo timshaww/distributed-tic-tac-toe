@@ -95,7 +95,7 @@ export default function TicTacToe() {
 		<div className='flex flex-col items-center mt-10'>
 			<button
 				onClick={startGame}
-				className='mb-4 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:bg-blue-600 transition-all'
+				className='mb-4 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg hover:bg-blue-600 transition-all cursor-pointer'
 			>
 				<Play size={20} /> Start Simulation
 			</button>
@@ -119,13 +119,13 @@ export default function TicTacToe() {
 										? {
 												scale: [1, 1.2, 1],
 												rotate: [0, 10, -10, 0],
-												transition: { duration: 0.25, repeat: 1 },
+												transition: { duration: 0.5, repeat: 2 },
 										  }
 										: status.includes('X_WINS') && cell === 'X'
 										? {
 												scale: [1, 1.2, 1],
 												rotate: [0, 10, -10, 0],
-												transition: { duration: 0.25, repeat: 1 },
+												transition: { duration: 0.5, repeat: 2 },
 										  }
 										: status.includes('DRAW')
 										? {

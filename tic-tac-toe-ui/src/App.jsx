@@ -91,6 +91,12 @@ export default function TicTacToe() {
 		}
 	}, [status]);
 
+	useEffect(() => {
+		if (error) {
+			setTimeout(() => setError(null), 3000);
+		}
+	}, [error]);
+
 	return (
 		<div className='flex flex-col items-center justify-center h-screen w-full relative'>
 			<div className='flex flex-col items-center mt-10'>
@@ -139,9 +145,18 @@ export default function TicTacToe() {
 				<p className='mt-4 text-lg font-medium bg-gray-200 px-4 py-2 rounded-lg shadow-md'>Status: {statusMessage}</p>
 			</div>
 			{error && (
-				<div className='absolute bottom-0 right-0 m-6 p-3 bg-red-500 text-white rounded-lg flex items-center gap-2'>
-					<AlertTriangle size={20} /> {error}
-				</div>
+				<AnimatePresence mode='wait'>
+					<motion.div
+						key={error} // Ensures animation re-runs when `error` changes
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: 20 }}
+						transition={{ duration: 0.3, ease: 'easeInOut' }}
+						className='absolute bottom-0 right-0 m-6 p-3 bg-red-500 text-white rounded-lg flex items-center gap-2'
+					>
+						<AlertTriangle size={20} /> {error}
+					</motion.div>
+				</AnimatePresence>
 			)}
 		</div>
 	);
